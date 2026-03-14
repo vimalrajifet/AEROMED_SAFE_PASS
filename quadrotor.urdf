@@ -1,0 +1,417 @@
+<?xml version="1.0" ?>
+<robot name="quadrotor_drone">
+
+  <!-- Materials -->
+  <material name="white">
+    <color rgba="1.0 1.0 1.0 1.0"/>
+  </material>
+  <material name="red">
+    <color rgba="1.0 0.0 0.0 1.0"/>
+  </material>
+  <material name="black">
+    <color rgba="0.1 0.1 0.1 1.0"/>
+  </material>
+  <material name="grey">
+    <color rgba="0.5 0.5 0.5 1.0"/>
+  </material>
+
+  <!-- Base Link: Central Frame (Main Body) -->
+  <link name="base_link">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.2 0.2 0.06"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.2 0.2 0.06"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.5"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.02"/>
+    </inertial>
+  </link>
+
+  <!-- Battery Pack: Mounted on top of the frame -->
+  <link name="battery">
+    <visual>
+      <geometry>
+        <box size="0.12 0.07 0.04"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+
+  <joint name="battery_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="battery"/>
+    <origin xyz="0 0 0.05"/>
+  </joint>
+
+  <!-- LiDAR Sensor: Cylindrical, mounted on top -->
+  <link name="lidar">
+    <visual>
+      <geometry>
+        <cylinder length="0.05" radius="0.04"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+
+  <joint name="lidar_joint" type="fixed">
+    <parent link="battery"/>
+    <child link="lidar"/>
+    <origin xyz="0 0 0.045"/>
+  </joint>
+
+  <!-- Camera: Forward-facing, mounted at the front -->
+  <link name="camera">
+    <visual>
+      <geometry>
+        <box size="0.04 0.04 0.04"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera"/>
+    <origin xyz="0.1 0 0"/>
+  </joint>
+
+  <!-- GPS Module -->
+  <link name="gps">
+    <visual>
+      <geometry>
+        <box size="0.03 0.03 0.01"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+  </link>
+
+  <joint name="gps_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="gps"/>
+    <origin xyz="-0.06 0.06 0.035"/>
+  </joint>
+
+  <!-- IMU Module -->
+  <link name="imu">
+    <visual>
+      <geometry>
+        <box size="0.02 0.02 0.01"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+  </link>
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu"/>
+    <origin xyz="0 0 0.03"/>
+  </joint>
+
+  <!-- Antenna: Thin, at the rear -->
+  <link name="antenna">
+    <visual>
+      <geometry>
+        <cylinder length="0.12" radius="0.003"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+
+  <joint name="antenna_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="antenna"/>
+    <origin xyz="-0.08 -0.08 0.09"/>
+  </joint>
+
+  <!-- Landing Gear: Four legs under the frame -->
+  <macro name="landing_leg" params="name x y">
+    <link name="leg_${name}">
+      <visual>
+        <geometry>
+          <cylinder length="0.1" radius="0.01"/>
+        </geometry>
+        <material name="white"/>
+      </visual>
+    </link>
+    <joint name="leg_${name}_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="leg_${name}"/>
+      <origin xyz="${x} ${y} -0.08"/>
+    </joint>
+  </macro>
+
+  <!-- Note: Since I cannot use macros in standard URDF without xacro, I will expand them manually -->
+
+  <!-- Front Right Leg -->
+  <link name="leg_fr">
+    <visual>
+      <geometry><cylinder length="0.1" radius="0.008"/></geometry>
+      <material name="white"/>
+    </visual>
+  </link>
+  <joint name="leg_fr_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="leg_fr"/>
+    <origin xyz="0.07 -0.07 -0.08"/>
+  </joint>
+
+  <!-- Front Left Leg -->
+  <link name="leg_fl">
+    <visual>
+      <geometry><cylinder length="0.1" radius="0.008"/></geometry>
+      <material name="white"/>
+    </visual>
+  </link>
+  <joint name="leg_fl_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="leg_fl"/>
+    <origin xyz="0.07 0.07 -0.08"/>
+  </joint>
+
+  <!-- Back Right Leg -->
+  <link name="leg_br">
+    <visual>
+      <geometry><cylinder length="0.1" radius="0.008"/></geometry>
+      <material name="white"/>
+    </visual>
+  </link>
+  <joint name="leg_br_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="leg_br"/>
+    <origin xyz="-0.07 -0.07 -0.08"/>
+  </joint>
+
+  <!-- Back Left Leg -->
+  <link name="leg_bl">
+    <visual>
+      <geometry><cylinder length="0.1" radius="0.008"/></geometry>
+      <material name="white"/>
+    </visual>
+  </link>
+  <joint name="leg_bl_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="leg_bl"/>
+    <origin xyz="-0.07 0.07 -0.08"/>
+  </joint>
+
+
+  <!-- ARMS, MOTORS, PROPELLERS, AND GUARDS (X Configuration) -->
+
+  <!-- Front Right Arm -->
+  <link name="arm_fr">
+    <visual>
+      <origin rpy="0 0 -0.7854" xyz="0.1 0 0"/>
+      <geometry><box size="0.2 0.03 0.02"/></geometry>
+      <material name="red"/>
+    </visual>
+  </link>
+  <joint name="arm_fr_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="arm_fr"/>
+    <origin rpy="0 0 -0.7854" xyz="0.07 -0.07 0"/>
+  </joint>
+
+  <link name="motor_fr">
+    <visual>
+      <geometry><cylinder length="0.04" radius="0.02"/></geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="motor_fr_joint" type="fixed">
+    <parent link="arm_fr"/>
+    <child link="motor_fr"/>
+    <origin xyz="0.2 0 0.02"/>
+  </joint>
+
+  <link name="prop_fr">
+    <visual>
+      <geometry><cylinder length="0.005" radius="0.12"/></geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="prop_fr_joint" type="continuous">
+    <parent link="motor_fr"/>
+    <child link="prop_fr"/>
+    <origin xyz="0 0 0.025"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="guard_fr">
+    <visual>
+      <geometry>
+        <cylinder length="0.01" radius="0.14"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+  </link>
+  <joint name="guard_fr_joint" type="fixed">
+    <parent link="motor_fr"/>
+    <child link="guard_fr"/>
+    <origin xyz="0 0 0.02"/>
+  </joint>
+
+
+  <!-- Front Left Arm -->
+  <link name="arm_fl">
+    <visual>
+      <origin rpy="0 0 0.7854" xyz="0.1 0 0"/>
+      <geometry><box size="0.2 0.03 0.02"/></geometry>
+      <material name="red"/>
+    </visual>
+  </link>
+  <joint name="arm_fl_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="arm_fl"/>
+    <origin rpy="0 0 0.7854" xyz="0.07 0.07 0"/>
+  </joint>
+
+  <link name="motor_fl">
+    <visual>
+      <geometry><cylinder length="0.04" radius="0.02"/></geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="motor_fl_joint" type="fixed">
+    <parent link="arm_fl"/>
+    <child link="motor_fl"/>
+    <origin xyz="0.2 0 0.02"/>
+  </joint>
+
+  <link name="prop_fl">
+    <visual>
+      <geometry><cylinder length="0.005" radius="0.12"/></geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="prop_fl_joint" type="continuous">
+    <parent link="motor_fl"/>
+    <child link="prop_fl"/>
+    <origin xyz="0 0 0.025"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="guard_fl">
+    <visual>
+      <geometry><cylinder length="0.01" radius="0.14"/></geometry>
+      <material name="white"/>
+    </visual>
+  </link>
+  <joint name="guard_fl_joint" type="fixed">
+    <parent link="motor_fl"/>
+    <child link="guard_fl"/>
+    <origin xyz="0 0 0.02"/>
+  </joint>
+
+
+  <!-- Back Right Arm -->
+  <link name="arm_br">
+    <visual>
+      <origin rpy="0 0 0.7854" xyz="-0.1 0 0"/>
+      <geometry><box size="0.2 0.03 0.02"/></geometry>
+      <material name="red"/>
+    </visual>
+  </link>
+  <joint name="arm_br_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="arm_br"/>
+    <origin rpy="0 0 0.7854" xyz="-0.07 -0.07 0"/>
+  </joint>
+
+  <link name="motor_br">
+    <visual>
+      <geometry><cylinder length="0.04" radius="0.02"/></geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="motor_br_joint" type="fixed">
+    <parent link="arm_br"/>
+    <child link="motor_br"/>
+    <origin xyz="-0.2 0 0.02"/>
+  </joint>
+
+  <link name="prop_br">
+    <visual>
+      <geometry><cylinder length="0.005" radius="0.12"/></geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="prop_br_joint" type="continuous">
+    <parent link="motor_br"/>
+    <child link="prop_br"/>
+    <origin xyz="0 0 0.025"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="guard_br">
+    <visual>
+      <geometry><cylinder length="0.01" radius="0.14"/></geometry>
+      <material name="white"/>
+    </visual>
+  </link>
+  <joint name="guard_br_joint" type="fixed">
+    <parent link="motor_br"/>
+    <child link="guard_br"/>
+    <origin xyz="0 0 0.02"/>
+  </joint>
+
+
+  <!-- Back Left Arm -->
+  <link name="arm_bl">
+    <visual>
+      <origin rpy="0 0 -0.7854" xyz="-0.1 0 0"/>
+      <geometry><box size="0.2 0.03 0.02"/></geometry>
+      <material name="red"/>
+    </visual>
+  </link>
+  <joint name="arm_bl_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="arm_bl"/>
+    <origin rpy="0 0 -0.7854" xyz="-0.07 0.07 0"/>
+  </joint>
+
+  <link name="motor_bl">
+    <visual>
+      <geometry><cylinder length="0.04" radius="0.02"/></geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="motor_bl_joint" type="fixed">
+    <parent link="arm_bl"/>
+    <child link="motor_bl"/>
+    <origin xyz="-0.2 0 0.02"/>
+  </joint>
+
+  <link name="prop_bl">
+    <visual>
+      <geometry><cylinder length="0.005" radius="0.12"/></geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="prop_bl_joint" type="continuous">
+    <parent link="motor_bl"/>
+    <child link="prop_bl"/>
+    <origin xyz="0 0 0.025"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <link name="guard_bl">
+    <visual>
+      <geometry><cylinder length="0.01" radius="0.14"/></geometry>
+      <material name="white"/>
+    </visual>
+  </link>
+  <joint name="guard_bl_joint" type="fixed">
+    <parent link="motor_bl"/>
+    <child link="guard_bl"/>
+    <origin xyz="0 0 0.02"/>
+  </joint>
+
+</robot>
