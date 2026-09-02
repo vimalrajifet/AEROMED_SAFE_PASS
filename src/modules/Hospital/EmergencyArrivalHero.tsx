@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, Zap, MapPin } from 'lucide-react';
+import { ShieldCheck, Zap, MapPin, Check, AlertTriangle } from 'lucide-react';
+import { useHospitalStore } from '../../store/useHospitalStore';
 import type { EmergencyRequest } from '../../types';
 
 interface EmergencyArrivalHeroProps {
@@ -7,6 +8,8 @@ interface EmergencyArrivalHeroProps {
 }
 
 export const EmergencyArrivalHero: React.FC<EmergencyArrivalHeroProps> = ({ emergency }) => {
+  const { acceptedIds, acceptEmergency } = useHospitalStore();
+
   // Live tick countdown simulation
   const [secondsRemaining, setSecondsRemaining] = useState<number>(494); // 08:14 = 494 seconds
 
@@ -24,6 +27,8 @@ export const EmergencyArrivalHero: React.FC<EmergencyArrivalHeroProps> = ({ emer
   const ambId = emergency?.assignedAmbulance || 'AMB-01';
   const emType = emergency?.type || 'Trauma Emergency (Level 1)';
   const distance = emergency?.distance || '2.4 km';
+  const emId = emergency?.id || 'EM-01';
+  const isAccepted = emergency?.hospitalAccepted || acceptedIds.has(emId);
 
   const stages = [
     { label: 'Incident Scene', status: 'completed' },
@@ -96,6 +101,25 @@ export const EmergencyArrivalHero: React.FC<EmergencyArrivalHeroProps> = ({ emer
           </span>
         </div>
       </div>
+
+      {/* ACTION BANNER: PENDING CONFIRMATION ALERT OR READY BADGE */}
+      {!isAccepted && (
+        <div className="relative z-10 mt-3 p-2.5 rounded-xl bg-amber-500/20 border border-amber-500/40 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 text-amber-300 font-bold">
+            <AlertTriangle size={16} className="animate-pulse text-amber-400 flex-shrink-0" />
+            <span>Ambulance CAD is waiting for Hospital Reception Confirmation.</span>
+          </div>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <button
+              onClick={() => acceptEmergency(emId)}
+              className="flex-1 sm:flex-none px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black text-xs flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer uppercase tracking-wider"
+            >
+              <Check size={14} />
+              <span>ACCEPT & CONFIRM RECEPTION BAY</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* BOTTOM: 5-Stage Transit Milestone Progress Bar */}
       <div className="relative z-10 pt-3">

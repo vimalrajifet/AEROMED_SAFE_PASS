@@ -1,38 +1,44 @@
 import React from 'react';
-import { AlertCircle, Clock, MapPin, Truck, Radio, Activity, Wifi } from 'lucide-react';
+import { AlertCircle, Clock, MapPin, Truck, Radio, Activity, Wifi, Check, X } from 'lucide-react';
 import { useHospitalStore } from '../../store/useHospitalStore';
 import type { EmergencyRequest } from '../../types';
 
 export const IncomingEmergencyQueue: React.FC = () => {
-  const { emergencies, selectedRequestId, setSelectedRequestId } = useHospitalStore();
+  const { emergencies, acceptedIds, acceptEmergency, selectedRequestId, setSelectedRequestId } =
+    useHospitalStore();
 
   // Provide realistic fallback cases if list is empty
-  const displayCases: EmergencyRequest[] = emergencies.length > 0 ? emergencies : [
-    {
-      id: 'EM-01',
-      type: 'Road Accident Trauma',
-      priority: 'critical',
-      patientCondition: 'Patient: Male, 42 • Multiple Soft Tissue Injuries',
-      assignedAmbulance: 'AMB-01',
-      distance: '2.4 km',
-      eta: '08 min',
-      location: { lat: 13.0600, lng: 80.2500 },
-      status: 'dispatched',
-      timestamp: Date.now() - 360000,
-    } as EmergencyRequest,
-    {
-      id: 'EM-02',
-      type: 'Acute Respiratory Failure',
-      priority: 'high',
-      patientCondition: 'Patient: Female, 58 • Severe Dyspnea',
-      assignedAmbulance: 'AMB-03',
-      distance: '4.8 km',
-      eta: '14 min',
-      location: { lat: 13.0750, lng: 80.2400 },
-      status: 'dispatched',
-      timestamp: Date.now() - 480000,
-    } as EmergencyRequest,
-  ];
+  const displayCases: EmergencyRequest[] =
+    emergencies.length > 0
+      ? emergencies
+      : [
+          {
+            id: 'EM-01',
+            type: 'Road Accident Trauma',
+            priority: 'critical',
+            patientCondition: 'Patient: Male, 42 • Multiple Soft Tissue Injuries',
+            assignedAmbulance: 'AMB-01',
+            distance: '2.4 km',
+            eta: '08 min',
+            location: { lat: 13.06, lng: 80.25 },
+            status: 'new',
+            hospitalAccepted: false,
+            timestamp: Date.now() - 360000,
+          } as EmergencyRequest,
+          {
+            id: 'EM-02',
+            type: 'Acute Respiratory Failure',
+            priority: 'high',
+            patientCondition: 'Patient: Female, 58 • Severe Dyspnea',
+            assignedAmbulance: 'AMB-03',
+            distance: '4.8 km',
+            eta: '14 min',
+            location: { lat: 13.075, lng: 80.24 },
+            status: 'new',
+            hospitalAccepted: false,
+            timestamp: Date.now() - 480000,
+          } as EmergencyRequest,
+        ];
 
   const selectedId = selectedRequestId || displayCases[0]?.id;
 
@@ -59,9 +65,10 @@ export const IncomingEmergencyQueue: React.FC = () => {
         </div>
 
         {/* Emergency Case Cards List */}
-        <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar min-h-0">
+        <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 custom-scrollbar min-h-0">
           {displayCases.map((em) => {
             const isSelected = selectedId === em.id;
+            const isAccepted = em.hospitalAccepted || acceptedIds.has(em.id);
             const priority = em.priority || 'high';
 
             // Severity left-stripe and badge styling
@@ -114,8 +121,8 @@ export const IncomingEmergencyQueue: React.FC = () => {
                   {em.patientCondition || 'Patient: Male, 42 • Monitored'}
                 </p>
 
-                {/* Distance & ETA Footer */}
-                <div className="flex items-center justify-between pt-1.5 border-t border-slate-100 text-[11px] font-mono text-slate-600">
+                {/* Distance & ETA */}
+                <div className="flex items-center justify-between py-1.5 border-t border-slate-100 text-[11px] font-mono text-slate-600 mb-2">
                   <div className="flex items-center gap-1">
                     <MapPin size={11} className="text-slate-400" />
                     <span className="font-semibold text-slate-700">{em.distance || '2.4 km'}</span>
@@ -124,6 +131,39 @@ export const IncomingEmergencyQueue: React.FC = () => {
                     <Clock size={11} className="text-amber-500" />
                     <span>ETA {em.eta || '08 min'}</span>
                   </div>
+                </div>
+
+                {/* ACTION BUTTONS: ACCEPT & REJECT */}
+                <div className="flex items-center gap-1.5 pt-1">
+                  {isAccepted ? (
+                    <div className="w-full py-1.5 px-2 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-300 font-bold text-[10px] flex items-center justify-center gap-1 uppercase tracking-wider font-mono">
+                      <Check size={12} />
+                      <span>Patient Accepted • Bay 1 Ready</span>
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          acceptEmergency(em.id);
+                        }}
+                        className="flex-1 py-1.5 px-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-[11px] flex items-center justify-center gap-1 transition-all shadow-xs cursor-pointer tracking-wider"
+                      >
+                        <Check size={13} />
+                        <span>ACCEPT</span>
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Handle decline
+                        }}
+                        className="py-1.5 px-2.5 rounded-lg bg-red-50 hover:bg-red-100 active:scale-95 text-red-700 border border-red-200 font-bold text-[11px] flex items-center justify-center gap-1 transition-all cursor-pointer tracking-wider"
+                      >
+                        <X size={13} />
+                        <span>REJECT</span>
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             );
