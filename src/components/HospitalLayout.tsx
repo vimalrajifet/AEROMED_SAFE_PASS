@@ -6,7 +6,7 @@ interface HospitalLayoutProps {
 
 export const HospitalLayout: React.FC<HospitalLayoutProps> = ({ children }) => {
     return (
-        <div className="h-screen bg-[#050505] overflow-hidden">
+        <div className="h-screen bg-white text-black overflow-hidden font-sans">
             {children}
         </div>
     );

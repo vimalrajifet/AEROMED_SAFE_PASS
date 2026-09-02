@@ -12,63 +12,56 @@ export const EmergencyTimeline: React.FC<EmergencyTimelineProps> = ({ emergency 
     if (!timeline) return null;
 
     return (
-        <div className="bg-black/40 backdrop-blur-md rounded-xl border border-white/10 p-5 shadow-2xl flex flex-col h-full">
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-2">
-                    <Clock size={18} className="text-amber-400" />
-                    <h3 className="text-sm font-bold uppercase tracking-widest text-white">Emergency Timeline</h3>
+        <div className="bg-white rounded-xl border border-gray-300 p-4 shadow-sm flex flex-col h-full text-black">
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-gray-200">
+                <div className="flex items-center gap-1.5">
+                    <Clock size={16} className="text-black" />
+                    <h3 className="text-xs font-black uppercase tracking-wider text-black">Emergency Timeline</h3>
                 </div>
                 <div className="text-right">
-                    <p className="text-[10px] text-gray-400 uppercase font-black">Arrival Countdown</p>
-                    <p className="text-xl font-black text-amber-400 animate-pulse">{eta || '00:00'}</p>
+                    <p className="text-[9px] text-gray-700 uppercase font-black">Arrival Countdown</p>
+                    <p className="text-base font-black text-black font-mono">{eta || '00:00'}</p>
                 </div>
             </div>
 
-            <div className="relative space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+            <div className="relative space-y-3 flex-1 overflow-y-auto pr-1 custom-scrollbar">
                 {/* Vertical line */}
-                <div className="absolute left-[11px] top-2 bottom-4 w-0.5 bg-white/5" />
+                <div className="absolute left-[9px] top-2 bottom-4 w-0.5 bg-gray-200" />
 
                 {timeline.map((event, i) => (
-                    <div key={i} className="relative flex items-start gap-4 animate-in fade-in slide-in-from-left-4 duration-500" style={{ animationDelay: `${i * 100}ms` }}>
-                        <div className={`mt-1.5 z-10 flex-shrink-0 rounded-full transition-all duration-500 ${
+                    <div key={i} className="relative flex items-start gap-3">
+                        <div className={`mt-0.5 z-10 flex-shrink-0 rounded-full transition-all ${
                             event.status === 'completed' 
-                                ? 'text-emerald-500 bg-black scale-110 shadow-[0_0_10px_#10b981]' 
+                                ? 'text-black bg-white' 
                                 : event.status === 'current'
-                                    ? 'text-amber-500 bg-black animate-pulse scale-125 shadow-[0_0_10px_#f59e0b]'
-                                    : 'text-gray-700 bg-black'
+                                    ? 'text-black bg-gray-200'
+                                    : 'text-gray-400 bg-white'
                         }`}>
-                            {event.status === 'completed' ? <CheckCircle2 size={22} /> : <Circle size={22} />}
+                            {event.status === 'completed' ? <CheckCircle2 size={18} className="text-black" /> : <Circle size={18} />}
                         </div>
                         <div className="flex-1 min-w-0">
                             <div className="flex items-baseline justify-between mb-0.5">
                                 <h4 className={`text-xs font-bold uppercase tracking-wide truncate ${
-                                    event.status === 'completed' ? 'text-emerald-400' : event.status === 'current' ? 'text-amber-400' : 'text-gray-500'
+                                    event.status === 'completed' || event.status === 'current' ? 'text-black font-black' : 'text-gray-600'
                                 }`}>
                                     {event.event}
                                 </h4>
-                                <span className="text-[9px] font-black text-gray-600 whitespace-nowrap">
+                                <span className="text-[9px] font-bold text-gray-700 font-mono whitespace-nowrap">
                                     {new Date(event.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
-                            </div>
-                            <div className="h-0.5 w-full bg-white/5 rounded-full overflow-hidden mt-2">
-                                <div 
-                                    className={`h-full rounded-full transition-all duration-1000 ${
-                                        event.status === 'completed' ? 'bg-emerald-500 w-full' : event.status === 'current' ? 'bg-amber-500 w-1/2' : 'bg-transparent w-0'
-                                    }`} 
-                                />
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
 
-            <div className="mt-6 pt-4 border-t border-white/5 space-y-3">
-                <h4 className="text-[10px] text-gray-400 uppercase font-black tracking-widest">Arrival Checklist</h4>
-                <div className="space-y-2">
-                    <CheckItem label="Prepare ICU Bay" completed={true} />
-                    <CheckItem label="Confirm Cardiology Team" completed={emergency.teamReadiness?.confirmed || false} />
-                    <CheckItem label="Clear Path to ER" completed={true} />
-                    <CheckItem label="Prepare Portable Ventilator" completed={false} />
+            <div className="mt-4 pt-3 border-t border-gray-200 space-y-2">
+                <h4 className="text-[10px] text-gray-700 uppercase font-black tracking-wider">Arrival Checklist</h4>
+                <div className="space-y-1.5">
+                    <CheckItem label="Prepare ICU Trauma Bay" completed={true} />
+                    <CheckItem label="Confirm Cardiology Medical Team" completed={emergency.teamReadiness?.confirmed || false} />
+                    <CheckItem label="Clear Dedicated Corridor to ER" completed={true} />
+                    <CheckItem label="Standby Portable Ventilator" completed={false} />
                 </div>
             </div>
         </div>
@@ -77,11 +70,11 @@ export const EmergencyTimeline: React.FC<EmergencyTimelineProps> = ({ emergency 
 
 const CheckItem = ({ label, completed }: { label: string, completed: boolean }) => (
     <div className="flex items-center gap-2">
-        <div className={`w-3 h-3 rounded border flex items-center justify-center transition-colors ${
-            completed ? 'bg-emerald-500 border-emerald-500' : 'border-white/20'
+        <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center transition-colors ${
+            completed ? 'bg-black border-black text-white' : 'border-gray-400 bg-white'
         }`}>
-            {completed && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
+            {completed && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
         </div>
-        <span className={`text-[10px] font-bold ${completed ? 'text-emerald-400' : 'text-gray-500'}`}>{label}</span>
+        <span className={`text-[10px] font-bold ${completed ? 'text-black' : 'text-gray-600'}`}>{label}</span>
     </div>
 );

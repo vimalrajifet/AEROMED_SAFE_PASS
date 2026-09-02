@@ -8,26 +8,26 @@ import { useHospitalStore } from '../../store/useHospitalStore';
 const AMBULANCE_BASE = { lat: 13.168736, lng: 80.068330 };
 const HOSPITAL_LOC = { lat: 13.182033, lng: 80.118029 };
 
-// ── ICONS ────────────────────────────────────────────────────────
-const createNeonIcon = (color: string, iconChar: string, size = 24) => divIcon({
+// ── HIGH-CONTRAST CLEAN ICONS ──────────────────────────────────
+const createMarkerIcon = (bg: string, fg: string, label: string, size = 26) => divIcon({
   className: 'custom-icon',
   html: `
     <div style="
-      background-color: ${color};
+      background-color: ${bg};
       width: ${size}px;
       height: ${size}px;
-      border-radius: 50%;
-      border: 2px solid white;
-      box-shadow: 0 0 15px ${color}, 0 0 5px ${color} inset;
+      border-radius: 6px;
+      border: 2px solid #000000;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: bold;
-      color: white;
+      font-weight: 900;
+      color: ${fg};
       font-family: sans-serif;
-      font-size: ${Math.round(size * 0.5)}px;
+      font-size: ${Math.round(size * 0.45)}px;
     ">
-      ${iconChar}
+      ${label}
     </div>
   `,
   iconSize: [size, size],
@@ -35,9 +35,9 @@ const createNeonIcon = (color: string, iconChar: string, size = 24) => divIcon({
   popupAnchor: [0, -size / 2]
 });
 
-const ambulanceIcon = createNeonIcon('#3b82f6', 'A');      // Blue
-const patientIcon = createNeonIcon('#ef4444', 'P');      // Red
-const hospitalIcon = createNeonIcon('#10b981', 'H', 28);  // Green
+const ambulanceIcon = createMarkerIcon('#000000', '#ffffff', 'AMB', 28);
+const patientIcon = createMarkerIcon('#ffffff', '#000000', 'PAT', 28);
+const hospitalIcon = createMarkerIcon('#000000', '#ffffff', 'HOSP', 32);
 
 // ── MAP CONTROLLER ───────────────────────────────────────────────
 const MapController = ({ center }: { center: [number, number] | null }) => {
@@ -115,31 +115,38 @@ export const HospitalMap: React.FC = () => {
   }, [selectedRequestId, emergencies, fleet]);
 
   return (
-    <div className="relative w-full h-full rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+    <div className="relative w-full h-full rounded-xl overflow-hidden border border-gray-300 shadow-sm bg-white">
       <MapContainer
         center={[HOSPITAL_LOC.lat, HOSPITAL_LOC.lng]}
         zoom={12}
         style={{ height: '100%', width: '100%' }}
-        className="z-0 bg-gray-900"
+        className="z-0 bg-gray-100"
       >
         <TileLayer
-          attribution='&copy; OpenStreetMap'
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          attribution='&copy; OpenStreetMap &copy; CARTO'
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         />
 
         <MapController center={mapCenter} />
 
         {/* Hospital Marker */}
         <Marker position={[HOSPITAL_LOC.lat, HOSPITAL_LOC.lng]} icon={hospitalIcon}>
-          <Popup>Hospital (You)</Popup>
+          <Popup>
+            <div className="font-sans text-xs">
+              <strong className="font-black text-black">Hospital Emergency Center</strong>
+              <div className="text-gray-700">Trauma Bay 1 Ready</div>
+            </div>
+          </Popup>
         </Marker>
 
         {/* Ambulances */}
         {fleet.map((amb) => (
           <Marker key={amb.id} position={[amb.location.lat, amb.location.lng]} icon={ambulanceIcon}>
             <Popup>
-              <strong>{amb.id}</strong><br />
-              Status: {amb.status}
+              <div className="font-sans text-xs">
+                <strong className="font-black text-black">{amb.id}</strong>
+                <div className="text-gray-700">Status: {amb.status}</div>
+              </div>
             </Popup>
           </Marker>
         ))}
@@ -148,8 +155,10 @@ export const HospitalMap: React.FC = () => {
         {emergencies.map((req) => (
           <Marker key={req.id} position={[req.location.lat, req.location.lng]} icon={patientIcon}>
             <Popup>
-              <strong>{req.type}</strong><br />
-              Status: {req.status}
+              <div className="font-sans text-xs">
+                <strong className="font-black text-black">{req.type}</strong>
+                <div className="text-gray-700">Priority: {req.priority}</div>
+              </div>
             </Popup>
           </Marker>
         ))}
@@ -158,7 +167,7 @@ export const HospitalMap: React.FC = () => {
         {legAmbToPatient && (
           <Polyline
             positions={legAmbToPatient.coords}
-            pathOptions={{ color: '#3b82f6', weight: 4, dashArray: '10, 10', opacity: 0.6 }}
+            pathOptions={{ color: '#000000', weight: 4, dashArray: '6, 6', opacity: 0.8 }}
           />
         )}
 
@@ -166,24 +175,24 @@ export const HospitalMap: React.FC = () => {
         {legPatientToHosp && (
           <Polyline
             positions={legPatientToHosp.coords}
-            pathOptions={{ color: '#10b981', weight: 4, opacity: 0.8 }}
+            pathOptions={{ color: '#000000', weight: 4, opacity: 0.9 }}
           />
         )}
       </MapContainer>
 
       {selectedRequestId && (legAmbToPatient || legPatientToHosp) && (
-        <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-md p-3 rounded-lg border border-white/20 z-[500] text-xs">
+        <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-md p-2.5 rounded-lg border border-gray-300 z-[500] text-xs shadow-sm font-mono">
           <div className="flex gap-4">
             {legAmbToPatient && (
               <div>
-                <p className="text-blue-400 font-bold uppercase text-[9px]">To Patient</p>
-                <p className="text-white text-sm">{legAmbToPatient.durMin} ({legAmbToPatient.distKm})</p>
+                <p className="text-gray-700 font-bold uppercase text-[9px]">To Patient</p>
+                <p className="text-black font-black text-xs">{legAmbToPatient.durMin} ({legAmbToPatient.distKm})</p>
               </div>
             )}
             {legPatientToHosp && (
-              <div className="border-l border-white/20 pl-4">
-                <p className="text-emerald-400 font-bold uppercase text-[9px]">To Hospital</p>
-                <p className="text-white text-sm">{legPatientToHosp.durMin} ({legPatientToHosp.distKm})</p>
+              <div className="border-l border-gray-300 pl-4">
+                <p className="text-gray-700 font-bold uppercase text-[9px]">To Hospital</p>
+                <p className="text-black font-black text-xs">{legPatientToHosp.durMin} ({legPatientToHosp.distKm})</p>
               </div>
             )}
           </div>

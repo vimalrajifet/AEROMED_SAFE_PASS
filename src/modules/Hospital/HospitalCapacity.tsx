@@ -6,35 +6,33 @@ export const HospitalCapacity: React.FC = () => {
     const { capacity } = useHospitalStore();
 
     const items = [
-        { icon: Bed, label: 'ICU Beds', ...capacity.icuBeds, color: 'text-blue-400' },
-        { icon: LayoutGrid, label: 'Emergency Beds', ...capacity.emergencyBeds, color: 'text-emerald-400' },
-        { icon: Wind, label: 'Ventilators', ...capacity.ventilators, color: 'text-amber-400' },
-        { icon: Activity, label: 'Op. Theatres', ...capacity.operationTheatres, color: 'text-purple-400' },
+        { icon: Bed, label: 'ICU Beds', ...capacity.icuBeds },
+        { icon: LayoutGrid, label: 'ER Beds', ...capacity.emergencyBeds },
+        { icon: Wind, label: 'Ventilators', ...capacity.ventilators },
+        { icon: Activity, label: 'Op. Theatres', ...capacity.operationTheatres },
     ];
 
     return (
-        <div className="bg-black/40 backdrop-blur-md rounded-xl border border-white/10 p-5 shadow-2xl">
-            <h3 className="text-sm font-bold uppercase tracking-widest text-white mb-6">Hospital Readiness Status</h3>
-            <div className="grid grid-cols-2 gap-4">
+        <div className="bg-white rounded-xl border border-gray-300 p-4 shadow-sm text-black">
+            <h3 className="text-xs font-black uppercase tracking-wider text-black mb-3 pb-2 border-b border-gray-200">
+                Hospital Readiness Capacity
+            </h3>
+            <div className="grid grid-cols-2 gap-2.5">
                 {items.map((item, i) => (
-                    <div key={i} className="p-4 rounded-xl bg-white/5 border border-white/5 relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:opacity-40 transition-opacity">
-                            <item.icon size={32} className={item.color} />
+                    <div key={i} className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+                        <div className="flex items-center justify-between mb-1">
+                            <span className="text-[10px] font-black text-gray-700 uppercase tracking-tight">{item.label}</span>
+                            <item.icon size={15} className="text-black" />
                         </div>
-                        <div className="relative z-10">
-                            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-2">{item.label}</span>
-                            <div className="flex items-baseline gap-2">
-                                <span className={`text-2xl font-black ${item.available > 0 ? 'text-white' : 'text-red-500'}`}>{item.available}</span>
-                                <span className="text-xs text-gray-600 font-bold">/ {item.total}</span>
-                            </div>
-                            <div className="h-1 w-full bg-white/5 rounded-full mt-3">
-                                <div 
-                                    className={`h-full rounded-full transition-all duration-1000 ${
-                                        (item.available / item.total) > 0.5 ? 'bg-emerald-500' : (item.available / item.total) > 0.2 ? 'bg-amber-500' : 'bg-red-500'
-                                    }`} 
-                                    style={{ width: `${(item.available / item.total) * 100}%` }}
-                                />
-                            </div>
+                        <div className="flex items-baseline gap-1 mt-1">
+                            <span className="text-xl font-black text-black font-mono">{item.available}</span>
+                            <span className="text-[10px] text-gray-700 font-bold font-mono">/ {item.total}</span>
+                        </div>
+                        <div className="h-1 w-full bg-gray-200 rounded-full mt-2 overflow-hidden">
+                            <div 
+                                className="h-full bg-black rounded-full transition-all duration-500"
+                                style={{ width: `${(item.available / item.total) * 100}%` }}
+                            />
                         </div>
                     </div>
                 ))}

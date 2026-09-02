@@ -3,34 +3,31 @@ import { Network, Cpu, Wifi, Radio, Zap } from 'lucide-react';
 
 export const SystemStatus: React.FC = () => {
     const stats = [
-        { icon: Network, label: 'Active Fleet', value: '4 Units', status: 'online' },
-        { icon: Cpu, label: 'AeroMed AI', value: 'Neural-V9', status: 'online' },
-        { icon: Wifi, label: 'Comms Link', value: '5G Hyper', status: 'online' },
-        { icon: Radio, label: 'Drone Network', value: 'Connected', status: 'online' },
+        { icon: Network, label: 'Active Fleet', value: '4 Units' },
+        { icon: Cpu, label: 'AeroMed AI', value: 'Neural-V9' },
+        { icon: Wifi, label: 'Comms Link', value: '5G Hyper' },
+        { icon: Radio, label: 'Drone Network', value: 'Connected' },
     ];
 
     return (
-        <div className="bg-black/40 backdrop-blur-md rounded-xl border border-white/10 p-5 shadow-2xl">
-            <h3 className="text-sm font-bold uppercase tracking-widest text-white mb-6 flex items-center gap-2">
-                <Zap size={16} className="text-indigo-400" />
-                System Core Metrics
+        <div className="bg-white rounded-xl border border-gray-300 p-4 shadow-sm text-black">
+            <h3 className="text-xs font-black uppercase tracking-wider text-black mb-3 pb-2 border-b border-gray-200 flex items-center gap-1.5">
+                <Zap size={15} className="text-black" />
+                System Status
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-2">
                 {stats.map((stat, i) => (
-                    <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 group hover:bg-white/10 transition-colors">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400">
-                                <stat.icon size={20} />
-                            </div>
-                            <div>
-                                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{stat.label}</p>
-                                <p className="text-xs font-bold text-gray-200">{stat.value}</p>
-                            </div>
-                        </div>
+                    <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-gray-50 border border-gray-200">
                         <div className="flex items-center gap-2">
-                            <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Active</span>
-                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]" />
+                            <stat.icon size={15} className="text-black" />
+                            <div>
+                                <p className="text-[9px] font-bold text-gray-700 uppercase tracking-tight">{stat.label}</p>
+                                <p className="text-xs font-black text-black font-mono">{stat.value}</p>
+                            </div>
                         </div>
+                        <span className="text-[9px] font-black bg-black text-white px-1.5 py-0.5 rounded uppercase">
+                            ONLINE
+                        </span>
                     </div>
                 ))}
             </div>

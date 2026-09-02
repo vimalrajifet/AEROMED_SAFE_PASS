@@ -7,51 +7,45 @@ interface PatientAlertCardProps {
 }
 
 export const PatientAlertCard: React.FC<PatientAlertCardProps> = ({ emergency }) => {
-    const { vitals, aiPrediction, priority } = emergency;
+    const { vitals, aiPrediction } = emergency;
 
     if (!vitals || !aiPrediction) return null;
 
-    const priorityColors = {
-        critical: 'text-red-500 border-red-500/50 bg-red-500/10',
-        high: 'text-orange-500 border-orange-500/50 bg-orange-500/10',
-        stable: 'text-emerald-500 border-emerald-500/50 bg-emerald-500/10',
-    };
-
     return (
-        <div className="bg-black/40 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className={`px-4 py-2 border-b flex items-center justify-between ${priorityColors[priority]}`}>
+        <div className="bg-white rounded-xl border border-gray-300 overflow-hidden shadow-sm text-black">
+            <div className="px-4 py-2.5 bg-black text-white flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <Activity size={18} />
-                    <span className="text-xs font-black uppercase tracking-widest">Live Patient Vitals</span>
+                    <Activity size={16} />
+                    <span className="text-xs font-black uppercase tracking-wider">Live Patient Telemetry & Vitals</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-current animate-pulse" />
-                    <span className="text-[10px] font-bold">STREAMING</span>
+                <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold">
+                    <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                    <span>STREAMING</span>
                 </div>
             </div>
 
-            <div className="p-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <VitalBox icon={Activity} label="Heart Rate" value={vitals.hr} unit="BPM" color="text-red-400" />
-                <VitalBox icon={Droplets} label="SpO2" value={vitals.spo2} unit="%" color="text-blue-400" />
-                <VitalBox icon={Zap} label="Blood Press." value={vitals.bp || '--'} unit="" color="text-purple-400" />
-                <VitalBox icon={Thermometer} label="Temp" value={vitals.temp || '--'} unit="°C" color="text-amber-400" />
+            <div className="p-3.5 grid grid-cols-2 sm:grid-cols-4 gap-3 bg-gray-50 border-b border-gray-200">
+                <VitalBox icon={Activity} label="Heart Rate" value={vitals.hr} unit="BPM" />
+                <VitalBox icon={Droplets} label="SpO2" value={vitals.spo2} unit="%" />
+                <VitalBox icon={Zap} label="Blood Press." value={vitals.bp || '--'} unit="" />
+                <VitalBox icon={Thermometer} label="Body Temp" value={vitals.temp || '--'} unit="°C" />
             </div>
 
-            <div className="mx-4 mb-4 p-4 rounded-lg bg-indigo-500/5 border border-indigo-500/20">
-                <div className="flex items-center gap-2 mb-3 text-indigo-300">
-                    <Brain size={20} className="animate-pulse" />
-                    <h4 className="text-sm font-bold uppercase tracking-wider">AeroMed AI Diagnosis</h4>
+            <div className="p-3.5 bg-white">
+                <div className="flex items-center gap-2 mb-2 text-black">
+                    <Brain size={16} />
+                    <h4 className="text-xs font-black uppercase tracking-wider">AeroMed AI Clinical Assessment</h4>
                 </div>
-                <div className="space-y-3">
-                    <div>
-                        <p className="text-[10px] text-indigo-400/70 uppercase font-bold">Predicted Condition</p>
-                        <p className="text-white font-medium">{aiPrediction.condition}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div className="p-2.5 rounded bg-gray-100 border border-gray-200">
+                        <p className="text-[10px] text-gray-700 uppercase font-black mb-0.5">Predicted Condition</p>
+                        <p className="text-black font-bold">{aiPrediction.condition}</p>
                     </div>
-                    <div>
-                        <p className="text-[10px] text-indigo-400/70 uppercase font-bold mb-1.5">Required Preparation</p>
-                        <div className="flex flex-wrap gap-2">
+                    <div className="p-2.5 rounded bg-gray-100 border border-gray-200">
+                        <p className="text-[10px] text-gray-700 uppercase font-black mb-1">Required Bay Prep</p>
+                        <div className="flex flex-wrap gap-1.5">
                             {aiPrediction.requiredPrep.map((prep, i) => (
-                                <span key={i} className="px-2 py-1 rounded-md bg-indigo-500/10 border border-indigo-500/30 text-[10px] text-indigo-200">
+                                <span key={i} className="px-2 py-0.5 rounded bg-black text-white text-[10px] font-bold">
                                     {prep}
                                 </span>
                             ))}
@@ -63,13 +57,13 @@ export const PatientAlertCard: React.FC<PatientAlertCardProps> = ({ emergency })
     );
 };
 
-const VitalBox = ({ icon: Icon, label, value, unit, color }: any) => (
-    <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-white/5 border border-white/5">
-        <Icon size={16} className={`${color} mb-1`} />
-        <span className="text-[9px] text-gray-500 uppercase font-bold tracking-tighter">{label}</span>
-        <div className="flex items-baseline gap-0.5">
-            <span className="text-xl font-black text-white">{value}</span>
-            <span className="text-[9px] text-gray-500 font-bold">{unit}</span>
+const VitalBox = ({ icon: Icon, label, value, unit }: any) => (
+    <div className="flex flex-col items-center justify-center p-2.5 rounded-lg bg-white border border-gray-300 shadow-sm text-center">
+        <Icon size={14} className="text-black mb-1" />
+        <span className="text-[9px] text-gray-700 uppercase font-bold tracking-tight">{label}</span>
+        <div className="flex items-baseline gap-0.5 mt-0.5">
+            <span className="text-lg font-black text-black font-mono">{value}</span>
+            <span className="text-[9px] text-gray-700 font-bold">{unit}</span>
         </div>
     </div>
 );

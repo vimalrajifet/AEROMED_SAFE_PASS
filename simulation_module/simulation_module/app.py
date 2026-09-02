@@ -1,5 +1,5 @@
 """
-AeroMed SafePass — Flask API
+AeroMed SafePass - Flask API
 Endpoint:  POST /simulate
 """
 from flask import Flask, request, jsonify
@@ -34,7 +34,7 @@ def simulate():
             },
             "safepass": {
                 "eta_seconds": safe_eta,
-                "drone_status": "Active — Clearing Route",
+                "drone_status": "Active - Clearing Route",
                 "traffic_level": "Clear (Green Corridor)",
                 "avg_speed": "50 km/h",
             },
@@ -47,5 +47,5 @@ def simulate():
 
 
 if __name__ == '__main__':
-    print("AeroMed Simulation Server → http://localhost:5000")
+    print("AeroMed Simulation Server -> http://localhost:5000")
     app.run(port=5000, debug=True)

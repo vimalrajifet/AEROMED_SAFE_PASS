@@ -1,5 +1,6 @@
 import React from 'react';
-import { Siren } from 'lucide-react';
+import { Siren, Building2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useLanguageStore } from '../store/useLanguageStore';
 
@@ -9,6 +10,7 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { t } = useLanguageStore();
+  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col h-screen bg-dashboard-bg text-white">
@@ -26,10 +28,15 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
-          <div className="flex items-center space-x-2 px-3 py-1 bg-green-500/10 text-green-500 rounded-full text-xs border border-green-500/20">
-            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-            <span className="hidden sm:inline">{t('app.systemOnline')}</span>
-          </div>
+          {/* Hospital Unit (HU) Button */}
+          <button
+            onClick={() => navigate('/hospital')}
+            title="Open Hospital Unit Dashboard"
+            className="flex items-center space-x-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-lg text-xs font-semibold border border-blue-500 shadow-md transition-all cursor-pointer"
+          >
+            <Building2 size={15} />
+            <span>Hospital Unit (HU)</span>
+          </button>
         </div>
       </header>
 
